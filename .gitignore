@@ -1,6 +1,9 @@
 # Environment packages
 venv/
 
+# API Keys & Secrets
+.env
+
 # Caches
 __pycache__/
 
@@ -9,3 +12,4 @@ data/preprocessing/
 data/features/
 data/model/
 data/dashboard/
+data/archive/
