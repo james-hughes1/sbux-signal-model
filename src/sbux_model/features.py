@@ -33,5 +33,65 @@ def apply_feature(df, feat_cfg):
         window = feat_cfg["window"]
         df[f"{col}_mom_{window}"] = df[col].pct_change(window)
 
+    elif ftype == "lagged_alpha":
+        df = add_lagged_alpha(
+            df,
+            alpha_col=feat_cfg.get("alpha_col", "alpha"),
+            lags=feat_cfg.get("lags", [1]),
+            mas=feat_cfg.get("mas", [])
+        )
+
     else:
         raise ValueError(f"Unknown feature type: {ftype}")
+
+
+def compute_timevarying_beta(df, asset_col="SBUX", benchmark_col="SPY", window=52):
+    """
+    Compute rolling beta between asset and benchmark.
+    Uses 52-week (1-year) rolling regression by default.
+    """
+    asset_ret = df[asset_col].pct_change()
+    bench_ret = df[benchmark_col].pct_change()
+
+    # Covariance & variance rolling windows
+    cov = asset_ret.rolling(window).cov(bench_ret)
+    var = bench_ret.rolling(window).var()
+
+    df["beta_roll"] = cov / var
+
+    return df
+
+
+def compute_residual_alpha(df, asset_col="SBUX", benchmark_col="SPY", window=52):
+    """
+    Compute idiosyncratic alpha_t = r_asset - beta_t * r_bench
+    and forward alpha (target).
+    """
+
+    # Rolling beta first
+    df = compute_timevarying_beta(df, asset_col, benchmark_col, window)
+
+    # Returns
+    df["asset_ret"] = df[asset_col].pct_change()
+    df["bench_ret"] = df[benchmark_col].pct_change()
+
+    # Residual alpha_t
+    df["alpha"] = df["asset_ret"] - df["beta_roll"] * df["bench_ret"]
+
+    # Forward alpha target
+    df["alpha_fwd_1"] = df["alpha"].shift(-1)
+
+    return df
+
+
+def add_lagged_alpha(df, alpha_col="alpha", lags=[1, 2, 4, 8], mas=[4, 12]):
+    """
+    Adds lagged residual alphas and moving-average alpha features.
+    """
+    for L in lags:
+        df[f"{alpha_col}_lag{L}"] = df[alpha_col].shift(L)
+
+    for M in mas:
+        df[f"{alpha_col}_ma{M}"] = df[alpha_col].rolling(M).mean()
+
+    return df

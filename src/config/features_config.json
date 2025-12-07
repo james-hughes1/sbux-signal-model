@@ -75,6 +75,12 @@
       "type": "lag",
       "column": "fed_funds_rate",
       "lag": 1
+    },
+    "lagged_alpha": {
+      "type": "lagged_alpha",
+      "column": "alpha",
+      "lags": [1, 2, 4, 8],
+      "mas": [4, 12]
     }
   }
 }

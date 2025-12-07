@@ -19,7 +19,7 @@ df = read_table(stage_name=input_stage, config=config.get("input"))
 # ----------------------------------------------------
 # 1. Compute RETURNS and TARGET (Expected Excess Return)
 # ----------------------------------------------------
-df = ft.compute_excess_return(df, asset_col="SBUX", benchmark_col="SPY")
+df = ft.compute_residual_alpha(df, asset_col="SBUX", benchmark_col="SPY", window=52)
 
 # ----------------------------------------------------
 # 2. Apply feature engineering from JSON specs

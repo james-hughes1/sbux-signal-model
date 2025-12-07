@@ -7,7 +7,8 @@ import argparse
 FOLDERS = {
     "preprocessing": "data/preprocessing",
     "features": "data/features",
-    "model": "data/model"
+    "model": "data/model",
+    "dashboard": "data/dashboard"
 }
 
 def clean_folders(folders_to_clean):
@@ -44,6 +45,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model", action="store_true", help="Clean data/model"
     )
+    parser.add_argument(
+        "--dashboard", action="store_true", help="Clean data/dashboard"
+    )
     args = parser.parse_args()
 
     # Determine which folders to clean
@@ -54,6 +58,8 @@ if __name__ == "__main__":
         selected_folders.append(FOLDERS["features"])
     if args.model:
         selected_folders.append(FOLDERS["model"])
+    if args.dashboard:
+        selected_folders.append(FOLDERS["dashboard"])
     if not selected_folders:
         # If none specified, clean all default folders
         selected_folders = list(FOLDERS.values())

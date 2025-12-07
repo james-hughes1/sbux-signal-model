@@ -14,23 +14,26 @@
     "filename": ""
   },
 
-  "target": "excess_ret_fwd_1", 
+  "target": "alpha_fwd_1",
   "feature_columns": [
-    "SPY",
+    "alpha_lag1",
+    "alpha_lag2",
+    "alpha_lag4",
+    "alpha_lag8",
+    "alpha_ma4",
+    "alpha_ma12",
+    "fed_funds_rate_lag_1",
+    "2Y_treasury_lag_1",
+    "CPI_z_4",
+    "^VIX_lag_1",
     "gt_interest",
     "gt_interest_lag_1",
-    "gt_interest_rm_4",
     "gt_interest_z_8",
     "SBUX_mom_4",
     "SPY_mom_4",
     "XLY_mom_4",
     "MCD_mom_4",
-    "^VIX_lag_1",
-    "^VIX_rm_4",
-    "CPI_z_4",
-    "10Y_treasury_lag_1",
-    "2Y_treasury_lag_1",
-    "fed_funds_rate_lag_1"
+    "SPY"
   ],
 
   "test": {
@@ -39,7 +42,7 @@
   },
   "model": {
     "type": "ridge",
-    "alpha": 1000.0,
+    "alpha": 300.0,
     "fit_intercept": true
   }
 }

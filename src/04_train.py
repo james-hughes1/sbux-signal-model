@@ -1,101 +1,122 @@
 import os
 import json
 import pickle
+import numpy as np
 import pandas as pd
+from datetime import datetime
+
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
-from sklearn.metrics import r2_score, root_mean_squared_error
+from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
 from sbux_model.io import read_table, save_table
+from sbux_model.model import walk_forward_eval
 
 CONFIG_PATH = "src/config/train_config.json"
 
-# Load config
+# ===============================================================
+# Load configuration
+# ===============================================================
 with open(CONFIG_PATH, "r") as f:
     config = json.load(f)
 
 stage_name = config["stage_name"]
 input_stage = config["input_stage"]
 
-# --- Load feature table ---
+# Walk-forward parameters
+wf_cfg = config.get("test", {})
+train_window = wf_cfg.get("train_window", 156)
+horizon = wf_cfg.get("horizon", 4)
+expanding = wf_cfg.get("expanding", False)
+
+# ===============================================================
+# Load feature table
+# ===============================================================
 df = read_table(stage_name=input_stage, config=config.get("input"))
 
-# --- Target and feature setup ---
 target_col = config["target"]
 feature_cols = config["feature_columns"]
 
-X = df[feature_cols]
-y = df[target_col]
+X = df[feature_cols].copy()
+y = df[target_col].copy()
 
-# --- Train-test split ---
-test_size = config["test"]["size"]
-test_type = config["test"]["type"]
+# ===============================================================
+# Print most correlated feature pairs
+# ===============================================================
+def print_top_correlated_features(df, top_n=10):
+    corr_matrix = df.corr().abs()  # absolute correlations
+    # Mask lower triangle
+    mask = np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
+    corr_matrix_triu = corr_matrix.where(mask)
+    # Stack and sort
+    sorted_pairs = corr_matrix_triu.stack().sort_values(ascending=False)
+    print(f"\nTop {top_n} most correlated feature pairs:\n")
+    print(sorted_pairs.head(top_n))
 
-if test_type == "last_n":
-    n = test_size
-    X_train, X_test = X.iloc[:-n], X.iloc[-n:]
-    y_train, y_test = y.iloc[:-n], y.iloc[-n:]
-elif test_type == "fraction":
-    split_idx = int(len(df) * (1 - test_size))
-    X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
-    y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
-else:
-    raise ValueError(f"Unknown test split type: {test_type}")
+print_top_correlated_features(X, top_n=10)
 
-# --- Model setup ---
-model_cfg = config.get("model", {"type": "linear"})
-model_type = model_cfg.get("type", "linear").lower()
+# ===============================================================
+# Model selection
+# ===============================================================
+model_cfg = config.get("model", {"type": "ridge"})
+model_type = model_cfg.get("type", "ridge").lower()
 
 if model_type == "linear":
     base_model = LinearRegression(fit_intercept=model_cfg.get("fit_intercept", True))
 elif model_type == "ridge":
-    base_model = Ridge(alpha=model_cfg.get("alpha", 1.0), fit_intercept=model_cfg.get("fit_intercept", True))
+    base_model = Ridge(alpha=model_cfg.get("alpha", 1.0),
+                       fit_intercept=model_cfg.get("fit_intercept", True))
 elif model_type == "lasso":
-    base_model = Lasso(alpha=model_cfg.get("alpha", 1.0), fit_intercept=model_cfg.get("fit_intercept", True))
+    base_model = Lasso(alpha=model_cfg.get("alpha", 1.0),
+                       fit_intercept=model_cfg.get("fit_intercept", True))
 else:
     raise ValueError(f"Unknown model type: {model_type}")
 
-# --- Create pipeline with scaler ---
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
     ("model", base_model)
 ])
 
-# --- Train ---
-pipeline.fit(X_train, y_train)
+# ===============================================================
+# Walk-Forward Evaluation
+# ===============================================================
+print("Running walk-forward evaluation...\n")
+_, truths_oos, oos_metrics = walk_forward_eval(
+    X, y, pipeline,
+    train_window=train_window,
+    horizon=horizon,
+    expanding=expanding
+)
 
-# --- Predictions ---
-df["pred_" + target_col] = pipeline.predict(X)
-
-# --- Metrics ---
-metrics = {
-    "r2_train": r2_score(y_train, pipeline.predict(X_train)),
-    "r2_test": r2_score(y_test, pipeline.predict(X_test)),
-    "rmse_test": root_mean_squared_error(y_test, pipeline.predict(X_test)),
-    "n_train": len(X_train),
-    "n_test": len(X_test),
-    "features_used": feature_cols,
-    "model_type": model_type,
-    "model_params": model_cfg
-}
-
-print("\nMODEL METRICS")
-for k, v in metrics.items():
+print("OOS Metrics:")
+for k, v in oos_metrics.items():
     print(f"{k}: {v}")
 
-# --- Save predictions CSV ---
+# Save predictions of full data (train & oos) into df
+df["pred_" + target_col] = pipeline.predict(X)
+
+# ===============================================================
+# Fit final model on full dataset
+# ===============================================================
+pipeline.fit(X, y)
+
+# ===============================================================
+# Save predictions
+# ===============================================================
 pred_df = df[[target_col, "pred_" + target_col] + feature_cols]
 pred_output_path = save_table(pred_df, stage_name, config.get("output_predictions"))
-print(f"Saved predictions → {pred_output_path}")
+print(f"\nSaved predictions → {pred_output_path}")
 
-# --- Save model ---
+# ===============================================================
+# Save trained model
+# ===============================================================
 model_dir = f"data/{stage_name}"
 os.makedirs(model_dir, exist_ok=True)
+
 if config.get("output_model") and config["output_model"].get("filename"):
     model_path = os.path.join(model_dir, config["output_model"]["filename"])
 else:
-    from datetime import datetime
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     model_path = os.path.join(model_dir, f"{stage_name}_{timestamp}.pkl")
 
@@ -104,7 +125,31 @@ with open(model_path, "wb") as f:
 
 print(f"Saved model → {model_path}")
 
-# --- Save metrics JSON ---
+# ===============================================================
+# Determine OOS cutoff date
+# ===============================================================
+if expanding:
+    oos_start_idx = train_window
+else:
+    oos_start_idx = len(df) - len(truths_oos)  # first OOS row
+oos_cutoff_date = df.index[oos_start_idx - 1] if hasattr(df.index, "__getitem__") else df.iloc[oos_start_idx - 1]["Date"]
+
+# ===============================================================
+# Save metrics with extra info
+# ===============================================================
+metrics = {
+    "walk_forward": oos_metrics,
+    "model_type": model_type,
+    "model_params": model_cfg,
+    "n_rows": len(df),
+    "train_window": train_window,
+    "horizon": horizon,
+    "features_used": feature_cols,
+    "target_col": target_col,
+    "predicted_col": "pred_" + target_col,
+    "oos_cutoff_date": str(oos_cutoff_date)
+}
+
 metrics_path = model_path.replace(".pkl", "_metrics.json")
 with open(metrics_path, "w") as f:
     json.dump(metrics, f, indent=4)
