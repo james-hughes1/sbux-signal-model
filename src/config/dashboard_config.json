@@ -11,5 +11,5 @@
   "output": {
     "filename": ""
   },
-  "preproc_columns": ["SBUX", "SPY", "gt_interest", "gt_scaled"]
+  "preproc_columns": ["SBUX", "SPY", "gt_interest"]
 }

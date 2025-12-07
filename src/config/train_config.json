@@ -21,11 +21,25 @@
     "gt_interest_lag_1",
     "gt_interest_rm_4",
     "gt_interest_z_8",
-    "SBUX_mom_4"
+    "SBUX_mom_4",
+    "SPY_mom_4",
+    "XLY_mom_4",
+    "MCD_mom_4",
+    "^VIX_lag_1",
+    "^VIX_rm_4",
+    "CPI_z_4",
+    "10Y_treasury_lag_1",
+    "2Y_treasury_lag_1",
+    "fed_funds_rate_lag_1"
   ],
 
   "test": {
     "type": "last_n",
     "size": 20
+  },
+  "model": {
+    "type": "ridge",
+    "alpha": 1000.0,
+    "fit_intercept": true
   }
 }

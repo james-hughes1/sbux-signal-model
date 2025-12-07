@@ -1,15 +1,48 @@
 {
-    "stage_name": "preprocessing",
-    "raw_files": {
-        "SBUX": "data/raw/SBUX_weekly_prices.csv",
-        "SPY": "data/raw/SPY_weekly_prices.csv",
-        "gt": [
-            "data/raw/gt_starbucks_2025.csv",
-            "data/raw/gt_starbucks_2024.csv",
-            "data/raw/gt_starbucks_2023.csv"
-        ]
+  "stage_name": "preprocessing",
+  "raw_files": {
+    "SBUX": {
+      "filename": "data/raw/SBUX_weekly.csv",
+      "preprocessing": "resample_weekly_last"
     },
-    "output": {
-        "filename": ""
+    "SPY": {
+      "filename": "data/raw/SPY_weekly.csv",
+      "preprocessing": "resample_weekly_last"
+    },
+    "XLY": {
+      "filename": "data/raw/XLY_weekly.csv",
+      "preprocessing": "resample_weekly_last"
+    },
+    "VIX": {
+      "filename": "data/raw/^VIX_weekly.csv",
+      "preprocessing": "resample_weekly_last"
+    },
+    "MCD": {
+      "filename": "data/raw/MCD_weekly.csv",
+      "preprocessing": "resample_weekly_last"
+    },
+    "10Y_treasury": {
+      "filename": "data/raw/10Y_treasury_weekly.csv",
+      "preprocessing": "resample_weekly_last"
+    },
+    "2Y_treasury": {
+      "filename": "data/raw/2Y_treasury_weekly.csv",
+      "preprocessing": "resample_weekly_last"
+    },
+    "fed_funds_rate": {
+      "filename": "data/raw/fed_funds_rate_weekly.csv",
+      "preprocessing": "resample_weekly_ffill"
+    },
+    "CPI": {
+      "filename": "data/raw/CPI_weekly.csv",
+      "preprocessing": "resample_weekly_ffill"
+    },
+    "gt": {
+      "filename": "data/raw/gt_starbucks_2018_2025_monthly_weekly.csv",
+      "preprocessing": "resample_weekly_last"
     }
+  },
+  "output": {
+    "filename": ""
+  }
 }

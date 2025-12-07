@@ -30,6 +30,51 @@
       "type": "momentum",
       "column": "SBUX",
       "window": 4
+    },
+    "spy_mom_4": {
+      "type": "momentum",
+      "column": "SPY",
+      "window": 4
+    },
+    "xly_mom_4": {
+      "type": "momentum",
+      "column": "XLY",
+      "window": 4
+    },
+    "mcd_mom_4": {
+      "type": "momentum",
+      "column": "MCD",
+      "window": 4
+    },
+    "vix_diff_1": {
+      "type": "lag",
+      "column": "^VIX",
+      "lag": 1
+    },
+    "vix_rm_4": {
+      "type": "rolling_mean",
+      "column": "^VIX",
+      "window": 4
+    },
+    "cpi_z_4": {
+      "type": "zscore",
+      "column": "CPI",
+      "window": 4
+    },
+    "10y_treasury_diff_1": {
+      "type": "lag",
+      "column": "10Y_treasury",
+      "lag": 1
+    },
+    "2y_treasury_diff_1": {
+      "type": "lag",
+      "column": "2Y_treasury",
+      "lag": 1
+    },
+    "fed_funds_rate_diff_1": {
+      "type": "lag",
+      "column": "fed_funds_rate",
+      "lag": 1
     }
   }
 }
