@@ -1,24 +1,36 @@
 import os
-import yfinance as yf
-import pandas as pd
+from sbux_model.collect import get_weekly_prices, save_prices, get_fred_series, gt_monthly_to_weekly
+from dotenv import load_dotenv
 
-RAW_DIR = "data/raw"
-os.makedirs(RAW_DIR, exist_ok=True)
+load_dotenv()
 
-tickers = ["SBUX", "SPY"]
-start = "2018-01-01"
-end = None  # today
 
-def get_weekly_prices(tickers, start, end):
-    df = yf.download(tickers, start=start, end=end, interval="1wk", auto_adjust=True, progress=False)["Close"]
-    if isinstance(df, pd.Series):
-        df = df.to_frame(name=tickers)
-    df.columns = tickers
-    return df
+# ---------------------------
+# Market / sector prices
+# ---------------------------
+tickers = ["SBUX", "SPY", "XLY", "^VIX", "MCD"]
+prices_df = get_weekly_prices(tickers)
+save_prices(prices_df)
 
-prices = get_weekly_prices(tickers, start, end)
+# ---------------------------
+# Macro data via FRED
+# ---------------------------
+FRED_API_KEY = os.getenv("FRED_API_KEY")  # set in .env
 
-for ticker in tickers:
-    path = os.path.join(RAW_DIR, f"{ticker}_weekly_prices.csv")
-    prices[[ticker]].to_csv(path)
-    print(f"Saved {path}")
+macro_series = {
+    "10Y_treasury": "DGS10",
+    "2Y_treasury": "DGS2",
+    "fed_funds_rate": "FEDFUNDS",
+    "CPI": "CPIAUCSL"
+}
+
+if FRED_API_KEY:
+    get_fred_series(macro_series, FRED_API_KEY)
+else:
+    print("FRED_API_KEY not set. Macro series not downloaded.")
+
+# ---------------------------
+# Google Trends
+# ---------------------------
+monthly_gt_filename = "gt_starbucks_2018_2025_monthly.csv"
+gt_monthly_to_weekly(monthly_gt_filename)
