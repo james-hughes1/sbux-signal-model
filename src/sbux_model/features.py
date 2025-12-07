@@ -19,6 +19,10 @@ def apply_feature(df, feat_cfg):
     if ftype == "lag":
         df[f"{col}_lag_{feat_cfg['lag']}"] = df[col].shift(feat_cfg["lag"])
 
+    elif ftype == "diff":
+        lag = feat_cfg.get("lag", 1)
+        df[f"{col}_diff_{lag}"] = df[col].diff(lag)
+
     elif ftype == "rolling_mean":
         window = feat_cfg["window"]
         df[f"{col}_rm_{window}"] = df[col].rolling(window).mean()

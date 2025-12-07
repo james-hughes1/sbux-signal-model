@@ -12,7 +12,7 @@
 
   "features": {
     "gt_diff_1": {
-      "type": "lag",
+      "type": "diff",
       "column": "gt_interest",
       "lag": 1
     },
@@ -47,7 +47,7 @@
       "window": 4
     },
     "vix_diff_1": {
-      "type": "lag",
+      "type": "diff",
       "column": "^VIX",
       "lag": 1
     },
@@ -62,17 +62,17 @@
       "window": 4
     },
     "10y_treasury_diff_1": {
-      "type": "lag",
+      "type": "diff",
       "column": "10Y_treasury",
       "lag": 1
     },
     "2y_treasury_diff_1": {
-      "type": "lag",
+      "type": "diff",
       "column": "2Y_treasury",
       "lag": 1
     },
     "fed_funds_rate_diff_1": {
-      "type": "lag",
+      "type": "diff",
       "column": "fed_funds_rate",
       "lag": 1
     },
