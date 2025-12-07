@@ -1,0 +1,31 @@
+{
+  "stage_name": "model",
+
+  "input_stage": "features",
+  "input": {
+    "filename": ""
+  },
+
+  "output_predictions": {
+    "filename": ""
+  },
+
+  "output_model": {
+    "filename": ""
+  },
+
+  "target": "excess_ret_fwd_1", 
+  "feature_columns": [
+    "SPY",
+    "gt_interest",
+    "gt_interest_lag_1",
+    "gt_interest_rm_4",
+    "gt_interest_z_8",
+    "SBUX_mom_4"
+  ],
+
+  "test": {
+    "type": "last_n",
+    "size": 20
+  }
+}

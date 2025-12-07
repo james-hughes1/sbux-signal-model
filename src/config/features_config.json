@@ -1,0 +1,35 @@
+{
+  "stage_name": "features",
+
+  "input_stage": "preprocessing",
+  "input": {
+    "filename": ""
+  },
+
+  "output": {
+    "filename": ""
+  },
+
+  "features": {
+    "gt_diff_1": {
+      "type": "lag",
+      "column": "gt_interest",
+      "lag": 1
+    },
+    "gt_rolling_mean_4": {
+      "type": "rolling_mean",
+      "column": "gt_interest",
+      "window": 4
+    },
+    "gt_zscore_8": {
+      "type": "zscore",
+      "column": "gt_interest",
+      "window": 8
+    },
+    "stock_mom_4": {
+      "type": "momentum",
+      "column": "SBUX",
+      "window": 4
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "stage_name": "dashboard",
+  "model_stage": "model",
+  "preproc_stage": "preprocessing",
+  "input_model": {
+    "filename": ""
+  },
+  "input_preproc": {
+    "filename": ""
+  },
+  "output": {
+    "filename": ""
+  },
+  "preproc_columns": ["SBUX", "SPY", "gt_interest", "gt_scaled"]
+}

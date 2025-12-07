@@ -1,0 +1,15 @@
+{
+    "stage_name": "preprocessing",
+    "raw_files": {
+        "SBUX": "data/raw/SBUX_weekly_prices.csv",
+        "SPY": "data/raw/SPY_weekly_prices.csv",
+        "gt": [
+            "data/raw/gt_starbucks_2025.csv",
+            "data/raw/gt_starbucks_2024.csv",
+            "data/raw/gt_starbucks_2023.csv"
+        ]
+    },
+    "output": {
+        "filename": ""
+    }
+}
