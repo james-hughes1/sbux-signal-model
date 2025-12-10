@@ -1,5 +1,5 @@
 import os
-from sbux_model.collect import get_weekly_prices, save_prices, get_fred_series, gt_monthly_to_weekly
+from sbux_model.collect import get_weekly_prices, save_prices, get_fred_series, gt_monthly_to_weekly, get_google_trends_weekly, get_microstructure_features
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,8 +29,19 @@ if FRED_API_KEY:
 else:
     print("FRED_API_KEY not set. Macro series not downloaded.")
 
+# # ---------------------------
+# # Google Trends
+# # ---------------------------
+# monthly_gt_filename = "gt_starbucks_2018_2025_monthly.csv"
+# gt_monthly_to_weekly(monthly_gt_filename)
+
+
 # ---------------------------
-# Google Trends
+# Microstructure / Liquidity
 # ---------------------------
-monthly_gt_filename = "gt_starbucks_2018_2025_monthly.csv"
-gt_monthly_to_weekly(monthly_gt_filename)
+get_microstructure_features("SBUX")
+
+# ---------------------------
+# Google Trends (pytrends)
+# ---------------------------
+get_google_trends_weekly("Starbucks")

@@ -40,6 +40,10 @@
     "gt": {
       "filename": "data/raw/gt_starbucks_2018_2025_monthly_weekly.csv",
       "preprocessing": "resample_weekly_last"
+    },
+    "micro": {
+      "filename": "data/raw/microstructure_data_weekly.csv",
+      "preprocessing": "resample_weekly_last"
     }
   },
   "output": {

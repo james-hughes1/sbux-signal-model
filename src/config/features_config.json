@@ -81,6 +81,74 @@
       "column": "alpha",
       "lags": [1, 2, 4, 8],
       "mas": [4, 12]
+    },
+    "hl_range_diff_1": {
+      "type": "diff",
+      "column": "hl_range",
+      "lag": 1
+    },
+    "hl_range_rm_4": {
+      "type": "rolling_mean",
+      "column": "hl_range",
+      "window": 4
+    },
+    "hl_range_z_8": {
+      "type": "zscore",
+      "column": "hl_range",
+      "window": 8
+    },
+
+    "vol_norm_diff_1": {
+      "type": "diff",
+      "column": "vol_norm",
+      "lag": 1
+    },
+    "vol_norm_rm_4": {
+      "type": "rolling_mean",
+      "column": "vol_norm",
+      "window": 4
+    },
+    "vol_norm_z_8": {
+      "type": "zscore",
+      "column": "vol_norm",
+      "window": 8
+    },
+    "vol_norm_mom_4": {
+      "type": "momentum",
+      "column": "vol_norm",
+      "window": 4
+    },
+
+    "price_impact_diff_1": {
+      "type": "diff",
+      "column": "price_impact",
+      "lag": 1
+    },
+    "price_impact_rm_4": {
+      "type": "rolling_mean",
+      "column": "price_impact",
+      "window": 4
+    },
+    "price_impact_z_8": {
+      "type": "zscore",
+      "column": "price_impact",
+      "window": 8
+    },
+
+    "volatility_diff_1": {
+      "type": "diff",
+      "column": "volatility",
+      "lag": 1
+    },
+    "volatility_rm_4": {
+      "type": "rolling_mean",
+      "column": "volatility",
+      "window": 4
+    },
+    "volatility_z_8": {
+      "type": "zscore",
+      "column": "volatility",
+      "window": 8
     }
   }
 }

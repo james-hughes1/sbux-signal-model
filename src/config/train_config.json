@@ -33,7 +33,11 @@
     "SPY_mom_4",
     "XLY_mom_4",
     "MCD_mom_4",
-    "SPY"
+    "SPY",
+    "vol_norm_mom_4",
+    "price_impact_rm_4",
+    "volatility_diff_1",
+    "hl_range_diff_1"
   ],
 
   "test": {
@@ -42,7 +46,7 @@
   },
   "model": {
     "type": "ridge",
-    "alpha": 300.0,
+    "alpha": 50.0,
     "fit_intercept": true
   }
 }
