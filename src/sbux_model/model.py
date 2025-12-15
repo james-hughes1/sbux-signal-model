@@ -84,3 +84,22 @@ def walk_forward_eval(X, y, pipeline, train_window, horizon, expanding=False):
     }
 
     return preds, truths, metrics
+
+
+def zero_predictor_baseline(y, oos_index):
+    """
+    Zero predictor baseline for alpha.
+    Assumes ŷ = 0 for all OOS observations.
+    """
+    y_oos = y.loc[oos_index]
+    preds = np.zeros(len(y_oos))
+
+    mse = np.mean((y_oos.values - preds) ** 2)
+    rmse = np.sqrt(mse)
+    r2 = 1 - mse / np.var(y_oos.values, ddof=0)
+
+    return {
+        "r2_oos": float(r2),
+        "rmse_oos": float(rmse),
+        "n_oos": int(len(y_oos)),
+    }

@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
 from sbux_model.io import read_table, save_table
-from sbux_model.model import walk_forward_eval
+from sbux_model.model import walk_forward_eval, zero_predictor_baseline
 
 CONFIG_PATH = "src/config/train_config.json"
 
@@ -82,12 +82,22 @@ pipeline = Pipeline([
 # Walk-Forward Evaluation
 # ===============================================================
 print("Running walk-forward evaluation...\n")
-_, truths_oos, oos_metrics = walk_forward_eval(
+preds_oos, truths_oos, oos_metrics = walk_forward_eval(
     X, y, pipeline,
     train_window=train_window,
     horizon=horizon,
     expanding=expanding
 )
+
+# ===============================================================
+# Zero-predictor baseline (alpha = 0)
+# ===============================================================
+zero_metrics = zero_predictor_baseline(y, truths_oos.index)
+
+print("\nZero-predictor baseline (alpha = 0):")
+for k, v in zero_metrics.items():
+    print(f"{k}: {v}")
+
 
 print("OOS Metrics:")
 for k, v in oos_metrics.items():
@@ -152,6 +162,7 @@ print(coef_df)
 # ===============================================================
 metrics = {
     "walk_forward": oos_metrics,
+    "zero_baseline": zero_metrics,
     "model_type": model_type,
     "model_params": model_cfg,
     "n_rows": len(df),
