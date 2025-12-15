@@ -41,11 +41,11 @@
   "test": {
     "type": "last_n",
     "size": 20,
-    "train_window": 266
+    "train_window": 228
   },
   "model": {
     "type": "ridge",
-    "alpha": 10.0,
+    "alpha": 20.0,
     "fit_intercept": true
   }
 }
