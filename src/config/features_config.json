@@ -21,10 +21,10 @@
       "column": "gt_interest",
       "window": 4
     },
-    "gt_zscore_8": {
+    "gt_zscore_16": {
       "type": "zscore",
       "column": "gt_interest",
-      "window": 8
+      "window": 16
     },
     "stock_mom_4": {
       "type": "momentum",
@@ -56,10 +56,10 @@
       "column": "^VIX",
       "window": 4
     },
-    "cpi_z_4": {
-      "type": "zscore",
+    "cpi_latest_pct_change": {
+      "type": "latest_pct_change",
       "column": "CPI",
-      "window": 4
+      "eps": 1e-8
     },
     "10y_treasury_diff_1": {
       "type": "diff",
@@ -71,10 +71,10 @@
       "column": "2Y_treasury",
       "lag": 1
     },
-    "fed_funds_rate_diff_1": {
-      "type": "diff",
+    "fed_funds_rate_latest_pct_change": {
+      "type": "latest_pct_change",
       "column": "fed_funds_rate",
-      "lag": 1
+      "eps": 1e-8
     },
     "lagged_alpha": {
       "type": "lagged_alpha",

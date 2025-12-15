@@ -22,13 +22,11 @@
     "alpha_lag8",
     "alpha_ma4",
     "alpha_ma12",
-    "fed_funds_rate_diff_1",
+    "fed_funds_rate_latest_pct_change",
     "2Y_treasury_diff_1",
-    "CPI_z_4",
-    "^VIX_diff_1",
-    "gt_interest",
+    "CPI_latest_pct_change",
     "gt_interest_diff_1",
-    "gt_interest_z_8",
+    "gt_interest_z_16",
     "SBUX_mom_4",
     "SPY_mom_4",
     "XLY_mom_4",
@@ -42,11 +40,12 @@
 
   "test": {
     "type": "last_n",
-    "size": 20
+    "size": 20,
+    "train_window": 266
   },
   "model": {
     "type": "ridge",
-    "alpha": 50.0,
+    "alpha": 10.0,
     "fit_intercept": true
   }
 }

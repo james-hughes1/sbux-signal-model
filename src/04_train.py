@@ -135,6 +135,19 @@ else:
 oos_cutoff_date = df.index[oos_start_idx - 1] if hasattr(df.index, "__getitem__") else df.iloc[oos_start_idx - 1]["Date"]
 
 # ===============================================================
+# Print feature coefficients
+# ===============================================================
+model_coefs = pipeline.named_steps["model"].coef_
+coef_df = pd.DataFrame({
+    "feature": feature_cols,
+    "coefficient": model_coefs
+}).sort_values(by="coefficient", key=abs, ascending=False)
+
+print("\nFeature coefficients (sorted by absolute value):\n")
+print(coef_df)
+
+
+# ===============================================================
 # Save metrics with extra info
 # ===============================================================
 metrics = {

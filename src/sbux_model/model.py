@@ -4,9 +4,41 @@ from sklearn.metrics import mean_squared_error
 
 def walk_forward_eval(X, y, pipeline, train_window, horizon, expanding=False):
     """
-    Walk-forward / rolling window evaluation.
-    Fits model on each window, predicts next horizon, rolls forward.
-    Returns OOS predictions, truth, and metrics.
+    Perform walk-forward (rolling or expanding window) evaluation for a regression model.
+
+    Parameters
+    ----------
+    X : pd.DataFrame
+        Feature matrix with shape (n_samples, n_features), indexed by time.
+    y : pd.Series
+        Target vector with shape (n_samples,), indexed by time.
+    pipeline : sklearn.pipeline.Pipeline
+        A scikit-learn pipeline containing preprocessing and regression model.
+    train_window : int
+        Number of observations to use for training in each window.
+    horizon : int
+        Number of observations to predict in each out-of-sample window.
+    expanding : bool, default=False
+        If True, the training window expands with each iteration; otherwise, a fixed-size rolling window is used.
+
+    Returns
+    -------
+    preds : pd.Series
+        Out-of-sample predictions, indexed by time.
+    truths : pd.Series
+        Corresponding true target values for the out-of-sample periods, indexed by time.
+    metrics : dict
+        Dictionary of aggregated evaluation metrics:
+            - "r2_oos": Out-of-sample R-squared
+            - "rmse_oos": Out-of-sample root mean squared error
+            - "n_oos": Number of out-of-sample observations
+
+    Notes
+    -----
+    - The function iteratively trains the model on the specified training window and predicts the next horizon of observations.
+    - Initial training period predictions are NaN and excluded from metrics.
+    - Assumes that X and y are aligned and indexed by time, typically in chronological order.
+    - Useful for time series regression where standard cross-validation would introduce lookahead bias.
     """
     n = len(X)
     preds = pd.Series(index=X.index, dtype=float)
