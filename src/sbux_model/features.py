@@ -44,6 +44,13 @@ def apply_feature(df, feat_cfg):
             lags=feat_cfg.get("lags", [1]),
             mas=feat_cfg.get("mas", [])
         )
+    
+    elif ftype == "latest_pct_change":
+        df = latest_pct_change(
+            df,
+            col,
+            eps=feat_cfg.get("epsilon", 1e-8)
+        )
 
     else:
         raise ValueError(f"Unknown feature type: {ftype}")
@@ -97,5 +104,25 @@ def add_lagged_alpha(df, alpha_col="alpha", lags=[1, 2, 4, 8], mas=[4, 12]):
 
     for M in mas:
         df[f"{alpha_col}_ma{M}"] = df[alpha_col].rolling(M).mean()
+
+    return df
+
+
+def latest_pct_change(df, column, eps=1e-8):
+    """
+    Latest non-zero percentage change in `column`, forward-filled.
+    
+    Assumes the column is forward-filled to the target frequency.
+    
+    Example:
+        CPI, Fed Funds, macro step series.
+    """
+    pct = df[column].pct_change()
+
+    # Keep only actual changes
+    pct = pct.where(pct.abs() > eps)
+
+    # Carry last change forward
+    df[f"{column}_latest_pct_change"] = pct.ffill()
 
     return df
